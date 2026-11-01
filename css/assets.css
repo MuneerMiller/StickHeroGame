@@ -1,3 +1,10 @@
+:root {
+  --accent: #e53935; /* Set from the player's headband color */
+  --ink: #1b1b1b;
+  --muted: #5f6b55;
+  --panel: rgba(255, 255, 255, 0.94);
+}
+
 html,
 body {
   height: 100%;
@@ -6,6 +13,7 @@ body {
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--ink);
   cursor: pointer;
   display: flex;
   justify-content: center;
@@ -39,46 +47,68 @@ body {
   display: block;
 }
 
-#score {
+/* ---------- HUD ---------- */
+
+.hud {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 24px;
+  right: 28px;
+  text-align: right;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#score {
   font-size: 2em;
   font-weight: 900;
+  line-height: 1.1;
+}
+
+#best {
+  font-size: 0.8em;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+#profile-button {
+  position: absolute;
+  top: 24px;
+  left: 24px;
   z-index: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: var(--accent);
+  color: white;
+  font: 800 1.1em "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+#profile-button:hover,
+#profile-button:focus-visible {
+  transform: scale(1.08);
+}
+
+#profile-button[hidden] {
+  display: none;
 }
 
 #introduction {
-  width: 200px;
-  height: 150px;
+  width: 240px;
+  min-height: 150px;
   position: absolute;
   font-weight: 600;
-  font-size: 0.8em;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.85em;
+  line-height: 1.4;
   text-align: center;
-  transition: opacity 2s;
+  transition: opacity 1s;
   pointer-events: none;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#restart {
-  width: 120px;
-  height: 120px;
-  position: absolute;
-  bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  color: white;
-  background-color: red;
-  border: none;
-  font-weight: 700;
-  font-size: 1.2em;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  display: none;
-  cursor: pointer;
 }
 
 #perfect {
@@ -89,5 +119,309 @@ body {
   opacity: 0;
   transition: opacity 0.4s;
   pointer-events: none;
+  font-weight: 800;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* ---------- Overlays (onboarding + game over) ---------- */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(30, 42, 24, 0.35);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  cursor: default;
+  animation: fade-in 0.25s ease-out;
+}
+
+.overlay[hidden] {
+  display: none;
+}
+
+.panel {
+  width: 100%;
+  max-width: 320px;
+  box-sizing: border-box;
+  padding: 24px 22px 20px;
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: pop-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.panel h1,
+.panel h2 {
+  margin: 6px 0 6px;
+  font-size: 1.35em;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.panel p {
+  margin: 6px 0;
+  font-size: 0.92em;
+  line-height: 1.45;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dot {
+  width: 22px;
+  height: 5px;
+  border-radius: 3px;
+  background: #d9dfd2;
+  transition: background 0.2s;
+}
+
+.dot.active {
+  background: var(--accent);
+}
+
+.preview {
+  display: block;
+  width: 72px;
+  height: 72px;
+  margin: 4px auto 0;
+}
+
+.preview.large {
+  width: 110px;
+  height: 110px;
+  margin: 8px auto;
+  border-radius: 50%;
+  background: linear-gradient(#bbd691, #fef1e1);
+}
+
+#name-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 2px solid #d9dfd2;
+  border-radius: 12px;
+  font: 600 1em "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+  transition: border-color 0.2s;
+}
+
+#name-input:focus {
+  border-color: var(--accent);
+}
+
+.error {
+  min-height: 1.2em;
+  color: #c62828;
+  font-weight: 600;
+  font-size: 0.85em !important;
+}
+
+.swatches {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #d9dfd2;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.swatch:hover {
+  transform: scale(1.1);
+}
+
+.swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 3px var(--ink);
+  transform: scale(1.1);
+}
+
+.tips {
+  list-style: none;
+  margin: 12px 0 6px;
+  padding: 0;
+  text-align: left;
+}
+
+.tips li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+  font-size: 0.92em;
+  line-height: 1.35;
+}
+
+.tip-icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip-perfect {
+  background: black;
+  position: relative;
+}
+
+.tip-perfect::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  background: red;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.panel button.primary,
+.panel button.secondary {
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  font: 700 1em "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  cursor: pointer;
+  transition: transform 0.1s, filter 0.15s;
+}
+
+.panel button.primary {
+  flex: 1;
+  background: var(--accent);
+  color: white;
+}
+
+.panel button.secondary {
+  background: #eef1ea;
+  color: var(--ink);
+}
+
+.panel button:hover {
+  filter: brightness(1.07);
+}
+
+.panel button:active {
+  transform: scale(0.97);
+}
+
+/* Game over */
+
+#gameover .badge {
+  display: none;
+  margin: 0 auto 6px;
+  width: max-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+#gameover.record .badge {
+  display: block;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.stats div {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 12px;
+  background: #eef1ea;
+}
+
+.stats span {
+  display: block;
+  font-size: 1.8em;
+  font-weight: 900;
+}
+
+.stats small {
+  color: var(--muted);
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.7em;
+}
+
+#restart {
+  width: 100%;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .panel {
+    animation: none;
+  }
+}
+
+.panel button:focus-visible,
+.swatch:focus-visible,
+#profile-button:focus-visible {
+  outline: 3px solid rgba(0, 0, 0, 0.3);
+  outline-offset: 2px;
 }
