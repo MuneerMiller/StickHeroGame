@@ -1,3 +1,5 @@
+// Stick Hero. Game logic based on this tutorial: https://youtu.be/eue3UdFvwPo
+
 // Extend the base functionality of JavaScript
 Array.prototype.last = function () {
     return this[this.length - 1];
@@ -58,10 +60,18 @@ const perfectElement = document.getElementById("perfect");
 const restartButton = document.getElementById("restart");
 const scoreElement = document.getElementById("score");
 
-// The canvas fills its container; the 375x375 game area is centered inside it
+// Size of the drawing area in CSS pixels
+let viewWidth = canvasWidth;
+let viewHeight = canvasHeight;
+
+// The canvas fills its container; the 375x375 game area is centered inside it.
+// The backing store is scaled by devicePixelRatio so it stays sharp on high-DPI screens.
 function resizeCanvas() {
-    canvas.width = Math.max(container.clientWidth, canvasWidth);
-    canvas.height = Math.max(container.clientHeight, canvasHeight);
+    const dpr = window.devicePixelRatio || 1;
+    viewWidth = Math.max(container.clientWidth, canvasWidth);
+    viewHeight = Math.max(container.clientHeight, canvasHeight);
+    canvas.width = Math.round(viewWidth * dpr);
+    canvas.height = Math.round(viewHeight * dpr);
 }
 
 // Initialize layout
@@ -204,7 +214,7 @@ function animate(timestamp) {
 
                     if (perfectHit) {
                         perfectElement.style.opacity = 1;
-                        setTimeout(() => (perfectElement.style.opacity = 0), 1000);
+                        setTimeout(() => (perfectElement.style.opacity = 0), 1500);
                     }
 
                     generatePlatform();
@@ -262,7 +272,7 @@ function animate(timestamp) {
             }
 
             heroY += elapsed / fallingSpeed;
-            const maxHeroY = platformHeight + 100 + (canvas.height - canvasHeight) / 2;
+            const maxHeroY = platformHeight + 100 + (viewHeight - canvasHeight) / 2;
             if (heroY > maxHeroY) {
                 draw();
                 restartButton.style.display = "block";
@@ -297,15 +307,17 @@ function thePlatformTheStickHits() {
 }
 
 function draw() {
+    const dpr = canvas.width / viewWidth;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.save();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, viewWidth, viewHeight);
 
     drawBackground();
 
     // Center the main game area in the canvas
     ctx.translate(
-        (canvas.width - canvasWidth) / 2 - sceneOffset,
-        (canvas.height - canvasHeight) / 2
+        (viewWidth - canvasWidth) / 2 - sceneOffset,
+        (viewHeight - canvasHeight) / 2
     );
 
     drawPlatforms();
@@ -322,7 +334,7 @@ function drawPlatforms() {
             x,
             canvasHeight - platformHeight,
             w,
-            platformHeight + (canvas.height - canvasHeight) / 2
+            platformHeight + (viewHeight - canvasHeight) / 2
         );
 
         // Draw the perfect area only if the hero has not yet reached the platform
@@ -416,11 +428,11 @@ function drawSticks() {
 
 function drawBackground() {
     // Sky
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    const gradient = ctx.createLinearGradient(0, 0, 0, viewHeight);
     gradient.addColorStop(0, "#BBD691");
     gradient.addColorStop(1, "#FEF1E1");
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, viewWidth, viewHeight);
 
     // Hills
     drawHill(hill1BaseHeight, hill1Amplitude, hill1Stretch, "#95C629");
@@ -433,12 +445,12 @@ function drawBackground() {
 // A hill is a shape under a stretched-out sine wave
 function drawHill(baseHeight, amplitude, stretch, color) {
     ctx.beginPath();
-    ctx.moveTo(0, canvas.height);
+    ctx.moveTo(0, viewHeight);
     ctx.lineTo(0, getHillY(0, baseHeight, amplitude, stretch));
-    for (let i = 0; i < canvas.width; i++) {
+    for (let i = 0; i < viewWidth; i++) {
         ctx.lineTo(i, getHillY(i, baseHeight, amplitude, stretch));
     }
-    ctx.lineTo(canvas.width, canvas.height);
+    ctx.lineTo(viewWidth, viewHeight);
     ctx.fillStyle = color;
     ctx.fill();
 }
@@ -471,7 +483,7 @@ function drawTree(x, color) {
 }
 
 function getHillY(canvasX, baseHeight, amplitude, stretch) {
-    const sineBaseY = canvas.height - baseHeight;
+    const sineBaseY = viewHeight - baseHeight;
     return (
         Math.sinus((sceneOffset * backgroundSpeedMultiplier + canvasX) * stretch) * amplitude +
         sineBaseY
@@ -479,6 +491,6 @@ function getHillY(canvasX, baseHeight, amplitude, stretch) {
 }
 
 function getTreeY(x, baseHeight, amplitude) {
-    const sineBaseY = canvas.height - baseHeight;
+    const sineBaseY = viewHeight - baseHeight;
     return Math.sinus(x) * amplitude + sineBaseY;
 }
