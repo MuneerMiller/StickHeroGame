@@ -74,9 +74,9 @@ function resizeCanvas() {
     canvas.height = Math.round(viewHeight * dpr);
 }
 
-// Initialize layout
+// Initialize layout; initProfile (profile.js) shows onboarding for new players, then resets the game
 resizeCanvas();
-resetGame();
+initProfile();
 
 // Resets game variables and layout but does not start the game (game starts on press)
 function resetGame() {
@@ -85,9 +85,11 @@ function resetGame() {
     sceneOffset = 0;
     score = 0;
 
-    introductionElement.style.opacity = 1;
+    introductionElement.textContent = introMessage();
+    introductionElement.style.opacity = onboardingElement.hidden ? 1 : 0;
     perfectElement.style.opacity = 0;
-    restartButton.style.display = "none";
+    gameOverElement.hidden = true;
+    profileButton.hidden = !onboardingElement.hidden; // Only offered between runs
     scoreElement.innerText = score;
 
     // The first platform is always the same; x + w has to match paddingX
@@ -149,12 +151,12 @@ window.addEventListener("pointerdown", startStretch);
 window.addEventListener("pointerup", endStretch);
 window.addEventListener("pointercancel", endStretch);
 
-// Press space to restart the game
+// Press space to restart the game (not while typing or editing the profile)
 window.addEventListener("keydown", function (event) {
-    if (event.key === " ") {
-        event.preventDefault();
-        resetGame();
-    }
+    if (event.key !== " " || !onboardingElement.hidden) return;
+    if (event.target.closest && event.target.closest("input, button")) return;
+    event.preventDefault();
+    resetGame();
 });
 
 window.addEventListener("resize", function () {
@@ -168,11 +170,13 @@ restartButton.addEventListener("click", function (event) {
 });
 
 function startStretch(event) {
-    if (event.target === restartButton) return;
+    if (isUiOpen()) return;
+    if (event.target.closest && event.target.closest("button, input, .panel")) return;
     if (event.button !== undefined && event.button !== 0) return; // Left button / touch only
     if (phase === "waiting") {
         lastTimestamp = undefined;
         introductionElement.style.opacity = 0;
+        profileButton.hidden = true;
         phase = "stretching";
         window.requestAnimationFrame(animate);
     }
@@ -275,7 +279,7 @@ function animate(timestamp) {
             const maxHeroY = platformHeight + 100 + (viewHeight - canvasHeight) / 2;
             if (heroY > maxHeroY) {
                 draw();
-                restartButton.style.display = "block";
+                onGameOver(score);
                 return;
             }
             break;
@@ -352,59 +356,63 @@ function drawPlatforms() {
 
 function drawHero() {
     ctx.save();
-    ctx.fillStyle = "black";
     ctx.translate(
         heroX - heroWidth / 2,
         heroY + canvasHeight - platformHeight - heroHeight / 2
     );
-
-    // Body
-    drawRoundedRect(-heroWidth / 2, -heroHeight / 2, heroWidth, heroHeight - 4, 5);
-
-    // Legs
-    const legDistance = 5;
-    ctx.beginPath();
-    ctx.arc(legDistance, 11.5, 3, 0, Math.PI * 2, false);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(-legDistance, 11.5, 3, 0, Math.PI * 2, false);
-    ctx.fill();
-
-    // Eye
-    ctx.beginPath();
-    ctx.fillStyle = "white";
-    ctx.arc(5, -7, 3, 0, Math.PI * 2, false);
-    ctx.fill();
-
-    // Band
-    ctx.fillStyle = "red";
-    ctx.fillRect(-heroWidth / 2 - 1, -12, heroWidth + 2, 4.5);
-    ctx.beginPath();
-    ctx.moveTo(-9, -14.5);
-    ctx.lineTo(-17, -18.5);
-    ctx.lineTo(-14, -8.5);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(-10, -10.5);
-    ctx.lineTo(-15, -3.5);
-    ctx.lineTo(-5, -7);
-    ctx.fill();
-
+    drawHeroFigure(ctx, profile.color);
     ctx.restore();
 }
 
-function drawRoundedRect(x, y, width, height, radius) {
-    ctx.beginPath();
-    ctx.moveTo(x, y + radius);
-    ctx.lineTo(x, y + height - radius);
-    ctx.arcTo(x, y + height, x + radius, y + height, radius);
-    ctx.lineTo(x + width - radius, y + height);
-    ctx.arcTo(x + width, y + height, x + width, y + height - radius, radius);
-    ctx.lineTo(x + width, y + radius);
-    ctx.arcTo(x + width, y, x + width - radius, y, radius);
-    ctx.lineTo(x + radius, y);
-    ctx.arcTo(x, y, x, y + radius, radius);
-    ctx.fill();
+// Draws the hero centered on the current origin; also used by the onboarding preview
+function drawHeroFigure(c, bandColor) {
+    c.fillStyle = "black";
+
+    // Body
+    drawRoundedRect(c, -heroWidth / 2, -heroHeight / 2, heroWidth, heroHeight - 4, 5);
+
+    // Legs
+    const legDistance = 5;
+    c.beginPath();
+    c.arc(legDistance, 11.5, 3, 0, Math.PI * 2, false);
+    c.fill();
+    c.beginPath();
+    c.arc(-legDistance, 11.5, 3, 0, Math.PI * 2, false);
+    c.fill();
+
+    // Eye
+    c.beginPath();
+    c.fillStyle = "white";
+    c.arc(5, -7, 3, 0, Math.PI * 2, false);
+    c.fill();
+
+    // Band
+    c.fillStyle = bandColor;
+    c.fillRect(-heroWidth / 2 - 1, -12, heroWidth + 2, 4.5);
+    c.beginPath();
+    c.moveTo(-9, -14.5);
+    c.lineTo(-17, -18.5);
+    c.lineTo(-14, -8.5);
+    c.fill();
+    c.beginPath();
+    c.moveTo(-10, -10.5);
+    c.lineTo(-15, -3.5);
+    c.lineTo(-5, -7);
+    c.fill();
+}
+
+function drawRoundedRect(c, x, y, width, height, radius) {
+    c.beginPath();
+    c.moveTo(x, y + radius);
+    c.lineTo(x, y + height - radius);
+    c.arcTo(x, y + height, x + radius, y + height, radius);
+    c.lineTo(x + width - radius, y + height);
+    c.arcTo(x + width, y + height, x + width, y + height - radius, radius);
+    c.lineTo(x + width, y + radius);
+    c.arcTo(x + width, y, x + width - radius, y, radius);
+    c.lineTo(x + radius, y);
+    c.arcTo(x, y, x, y + radius, radius);
+    c.fill();
 }
 
 function drawSticks() {
