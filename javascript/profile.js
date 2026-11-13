@@ -182,7 +182,7 @@ function updateBest() {
 // Text shown before each run
 function introMessage() {
     if (profile.gamesPlayed === 0) {
-        return `Hold down to stretch your stick, ${displayName()}. Let go to drop it!`;
+        return `Hold down (or hold Space) to stretch your stick, ${displayName()}. Let go to drop it!`;
     }
     if (profile.best > 0) {
         return `Welcome back, ${displayName()}! Your best is ${profile.best}. Hold down to beat it.`;

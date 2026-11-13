@@ -151,13 +151,27 @@ window.addEventListener("pointerdown", startStretch);
 window.addEventListener("pointerup", endStretch);
 window.addEventListener("pointercancel", endStretch);
 
-// Press space to restart the game (not while typing or editing the profile)
+// Keyboard: hold Space to grow the stick and release to drop it. After a
+// fall, Space starts a new run. It never resets a run in progress.
 window.addEventListener("keydown", function (event) {
     if (event.key !== " " || !onboardingElement.hidden) return;
     if (event.target.closest && event.target.closest("input, button")) return;
     event.preventDefault();
-    resetGame();
+    if (event.repeat) return; // Holding the key fires repeats; one press is enough
+    if (!gameOverElement.hidden) {
+        resetGame();
+    } else {
+        startStretch(event);
+    }
 });
+
+window.addEventListener("keyup", function (event) {
+    if (event.key === " ") endStretch();
+});
+
+// If the window loses focus mid-press (e.g. switching apps), the release
+// never arrives, so drop the stick instead of letting it grow forever.
+window.addEventListener("blur", endStretch);
 
 window.addEventListener("resize", function () {
     resizeCanvas();
