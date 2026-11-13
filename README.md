@@ -35,9 +35,9 @@ Your profile and **personal best** are saved in your browser (`localStorage`), s
 
 | Action | Mouse | Touch | Keyboard |
 | --- | --- | --- | --- |
-| Grow the stick | Hold the left button | Hold your finger down | – |
-| Drop the stick | Release | Lift your finger | – |
-| Restart | Click **RESTART** | Tap **RESTART** | <kbd>Space</kbd> |
+| Grow the stick | Hold the left button | Hold your finger down | Hold <kbd>Space</kbd> |
+| Drop the stick | Release | Lift your finger | Release <kbd>Space</kbd> |
+| Restart after a fall | Click **Play again** | Tap **Play again** | <kbd>Space</kbd> |
 
 - Each platform you reach scores **1 point**.
 - Land the stick on the **red square** in the middle of a platform for a **perfect hit** and **double score**.
