@@ -1,0 +1,33 @@
+Copyright (c) 2026 Mogamat Muneer Miller. All rights reserved.
+
+SOURCE-AVAILABLE LICENCE — VIEW ONLY
+
+This repository and everything in it (the source code, markup, styles,
+scripts, images, text and design) is the work of Mogamat Muneer Miller (the
+"Author") and is protected by copyright. The game is inspired by the classic
+Stick Hero mobile game, and its core game logic was first written by
+following a public video tutorial, which is credited in the README. It is
+made public so that others may read it, learn from it, and assess the
+Author's work. It is NOT open source.
+
+You MAY:
+  - view and read the code in this repository;
+  - play the live game in a web browser.
+
+You MAY NOT, without the Author's prior written permission:
+  - copy, reproduce, republish or redistribute the whole or any part of it;
+  - reuse the code, markup, styles, scripts, design or assets in your own
+    projects, whether commercial or not, and whether modified or not;
+  - remove, hide or alter the copyright, authorship or attribution notices;
+  - present this work, or anything derived from it, as your own.
+
+The ideas and techniques shown in the credited tutorial are not claimed by
+the Author, and any third-party material remains under its own licence.
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. TO THE EXTENT
+THE LAW ALLOWS, THE AUTHOR IS NOT LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE WORK OR ITS USE.
+
+Authorship and the date of first publication can be established from this
+repository's Git history. To request permission for any use above, contact
+the Author.

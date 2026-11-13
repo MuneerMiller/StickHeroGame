@@ -105,3 +105,7 @@ StickHeroGame/
 ## Credits
 
 Built by **[Muneer Miller](https://github.com/MuneerMiller)**. Inspired by the classic Stick Hero mobile game, with game logic based on [this video tutorial](https://youtu.be/eue3UdFvwPo).
+
+## Licence
+
+Copyright © 2026 Mogamat Muneer Miller. All rights reserved. The code is public so you can read it and learn from it, but it is not open source. See [LICENSE](LICENSE) for details.
